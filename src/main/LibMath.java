@@ -43,7 +43,7 @@ public class LibMath {
    * de subtração entre os dois.
    */
   public float[] subtraiVetor(float a[], float b[]) {
-    float result[] = {0, 0, 0, 0};
+    float result[] = {0, 0, 0};
 
     if( (a != null && b != null) ) 
     { 
@@ -64,63 +64,73 @@ public class LibMath {
     return result;
   }
 
-  /* Calcula o produto vetorial entre dois vetores a e b, usando a regra de Laplace
-   * utitliza o pre-processamento do método criaMatriz.*/
+  public float[] produtoVetorial(float a[], float b[]) {
+    float result[] = {0,0,0};
+    
+    result[0] = (a[1]*b[2])-(b[1]*a[2]);
+    result[1] = -((a[0]*b[2])-(b[0]*a[2]));
+    result[2] = (a[0]*b[1])-(b[0]*a[1]);
+    
+    return result;
+  }
+  
+  public float norma(float v[]) {
+    float result ;
+    
+    result = (float) Math.sqrt(Math.pow(Double.parseDouble(Float.toString(v[0])),2)+Math.pow(Double.parseDouble(Float.toString(v[1])), 2)+Math.pow(Double.parseDouble(Float.toString(v[2])), 2));
+    
+    return result;
+  }
+  
+  /*Retorna um vetor 3D normalizado(unitário), do vetor passado como argumento*/
+  public float[] normaliza(float v[], float n) {
+    float result[] = {0,0,0};
+    
+    result[0] = v[0]/n;
+    result[1] = v[1]/n;
+    result[2] = v[2]/n;
+    
+    return result;
+  }
+  
+  public float[] coordBaricentrica(float p[], float a[], float b[], float c[]) {
+   float tInversa[][] = {{0,0}, {0,0}}; 
+   float escInversa = 1/( ( (a[0]-c[0])*(b[1]-c[1]) ) - ( (b[0]-c[0])*(a[1]-c[1]) ) ); //escalar 1/(ad-bc).
    
-  public float produtoVetorial(float matriz[][]) {
-    float determinante = 0;
-    
-
-    float[][] aux;
-    int i_aux, j_aux, linha, coluna, i;            
-
-    for(i = 0; i < 3; i++) {
-
-      if(matriz[0][i] != 0) {
-        aux = new float[2][2];
-        i_aux = 0;
-        j_aux = 0;
-
-        for(linha = 1; linha < 3; linha++){
-          for(coluna = 0; coluna < 3; coluna++){
-            if(coluna != i){
-              aux[i_aux][j_aux] = matriz[linha][coluna];
-              j_aux++;
-            }
-          }
-
-          i_aux++;
-          j_aux = 0;
-        }
-
-        determinante += Math.pow(-1, i)*matriz[0][i]*produtoVetorial(aux);
-      }
-
-    }
-  
-  return determinante;
-} 
-
-public void imprimeVetor(float vetor[]) {
-  System.out.println("[" + vetor[0] + "," + vetor[1] + "," + vetor[2] + "]");
+   //obtendo a inversa de T:
+   tInversa[0][0] = escInversa * (b[1]-c[1]); 
+   tInversa[0][1] = escInversa * -(b[0]-c[0]);
+   tInversa[1][0] = escInversa * -(a[1]-c[1]);
+   tInversa[1][1] = escInversa * (a[0]-c[0]);
+   
+   float coord[][] = {{0}, {0}}; //matriz coluna com as coordenadas baricêntricas(alpha e beta)
+   
+   coord[0][0] = ( tInversa[0][0] * (p[0] - c[0]) ) + ( tInversa[0][1] * (p[1] - c[1]) ); // alpha
+   coord[1][0] = ( tInversa[1][0] * (p[0] - c[0]) ) + ( tInversa[1][1] * (p[1] - c[1]) ); //beta
+   
+   float gama = ( 1 - ( coord[0][0] + coord[1][0] ) );
+   
+   float result[] = {coord[0][0], coord[1][0], gama};
+   
+   return result;
 }
-
-/*cria matriz 3x3 a partir de dois vetores 3D. Usado como pre-processamento
- * do método do produtoVetorial.
- */
-public float[][] criaMatriz(float a[], float b[]) {
-  float matriz[][] = {{0,0,0},{0,0,0},{0,0,0}};
   
-  matriz[0][0] = a[0];
-  matriz[0][1] = a[1];
-  matriz[0][2] = a[2];
-  matriz[1][0] = b[0];
-  matriz[1][1] = b[1];
-  matriz[1][2] = b[2]; 
-  
-  return matriz;
+  public float[] baric2Cartes(float cdBaric[], float a[], float b[], float c[]) {
+    a[0] = cdBaric[0] * a[0]; a[1] = cdBaric[0] * a[1]; //alpha * a
+    b[0] = cdBaric[1] * b[0]; b[1] = cdBaric[1] * b[1]; //beta * b
+    c[0] = cdBaric[2] * a[0]; c[1] = cdBaric[2] * c[1]; //gama * c
     
-} 
+    float result[] = {( a[0]+b[0]+c[0] ),( a[1]+b[1]+c[1])};
+    
+    return result;
+  }
+  
+  public void imprimeVetor(float vetor[]) {
+    if(vetor.length == 2) 
+      System.out.println("[" + vetor[0] + "," + vetor[1] + "]");
+    else
+      System.out.println("[" + vetor[0] + "," + vetor[1] + "," + vetor[2] + "]");
+  }
+}  
 
-}
 

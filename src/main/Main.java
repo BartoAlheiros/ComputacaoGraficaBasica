@@ -38,6 +38,30 @@ public class Main {
     
     System.out.println(lib.produtoEscalar(v1, v2));
     
+    v1[0] = 1f; v1[1] = 2f; v1[2] = 1f;
+    v2[0] = 1f; v2[1] = 0f; v2[2] = -1f;
+    
+    float resultV[] = lib.produtoVetorial(v1, v2);
+    lib.imprimeVetor(resultV);
+    
+    float n = lib.norma(resultV); //norma
+    
+    System.out.println(n);
+    
+    v1[0] = 1f; v1[1] = -2f; v1[2] = 2f;
+    n = lib.norma(v1);
+    System.out.println("Norma de v1: " + n);
+    
+    lib.imprimeVetor(lib.normaliza(v1, n));
+    
+    float p[] = {-0.25f,0.75f};
+    float pontoA[] = {-1f,1f};
+    float pontoB[] = {0f,-1f};
+    float pontoC[] = {1f,0f};
+    
+    lib.imprimeVetor(lib.coordBaricentrica(p, pontoA, pontoB, pontoC));
+    
+    lib.imprimeVetor(lib.baric2Cartes(lib.coordBaricentrica(p, pontoA, pontoB, pontoC), pontoA, pontoB, pontoC));
   }
   
 }
