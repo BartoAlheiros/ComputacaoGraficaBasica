@@ -9,59 +9,167 @@ Aluno: José Bartolomeu Alheiros Dias Neto
 
 package main;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+
 public class Main {
  
   public static void main(String[] args) {  
+    /*(a)*/
     LibMath lib = new LibMath();
     
-    float a[][] = { {-7.0f, -3.0f}, 
-                    {4.0f, -8.0f}, 
-                    {-1.0f, -6.0f} };
+    float a[][] = { {1.5f, 2.5f, 3.5f}, 
+                    {4.5f, 5.5f, 6.5f} };
     
-    float b[][] = { {2.0f, -5.0f, 3.0f}, 
-                    {1.0f, 4.0f, 9.0f} };
+    float b[][] = { {7.5f, 8.5f}, 
+                    {9.5f, 10.5f},
+                    {11.5f,12.5f} };
     
-    System.out.println(a.length);
-    
+  
     float result[][] = lib.calculaProduto(a, b);
-    
+    System.out.println("Letra A: ");
     lib.imprimeMatriz(result);
-    
-    float v1[] = {1f, 2f, 3f};
-    float v2[] = {2f, 0f, -1f};
-    
     System.out.println();
     
+    /*(b)*/
+    float v1[] = {3.5f, 1.5f, 2.0f};
+    float v2[] = {1.0f, 2.0f, 1.5f};
+    
+    System.out.println("Letra B: ");
     lib.imprimeVetor(lib.subtraiVetor(v1, v2));
-    
     System.out.println();
     
+    /*(c)*/
+    System.out.println("Letra C: ");
     System.out.println(lib.produtoEscalar(v1, v2));
+    System.out.println();
     
-    v1[0] = 1f; v1[1] = 2f; v1[2] = 1f;
-    v2[0] = 1f; v2[1] = 0f; v2[2] = -1f;
-    
+    /*(d)*/
     float resultV[] = lib.produtoVetorial(v1, v2);
+    System.out.println("Letra D: ");
     lib.imprimeVetor(resultV);
+    System.out.println();
     
-    float n = lib.norma(resultV); //norma
-    
+    /*(e)*/
+    float n = lib.norma(v1);
+    System.out.println("Letra E: ");
     System.out.println(n);
+    System.out.println();
     
-    v1[0] = 1f; v1[1] = -2f; v1[2] = 2f;
-    n = lib.norma(v1);
-    System.out.println("Norma de v1: " + n);
+    /*(f)*/
+    System.out.println("Letra F: ");lib.imprimeVetor(lib.normaliza(v1, n));
+    System.out.println();
     
-    lib.imprimeVetor(lib.normaliza(v1, n));
-    
+    /*(g)*/
     float p[] = {-0.25f,0.75f};
     float pontoA[] = {-1f,1f};
     float pontoB[] = {0f,-1f};
-    float pontoC[] = {1f,0f};
+    float pontoC[] = {1f,1f};
     
-    lib.imprimeVetor(lib.coordBaricentrica(p, pontoA, pontoB, pontoC));
+    System.out.println("Letra G: ");
+    System.out.println(Arrays.toString(lib.coordBaricentrica(p, pontoA, pontoB, pontoC)));
+    System.out.println();
     
-    lib.imprimeVetor(lib.baric2Cartes(lib.coordBaricentrica(p, pontoA, pontoB, pontoC), pontoA, pontoB, pontoC));
+    /*(h)*/
+    float coordBaric[] = {0.5f,0.25f,0.25f};
+    
+    System.out.println("Letra H: ");
+    System.out.println(Arrays.toString(lib.baric2Cartes(coordBaric, pontoA, pontoB, pontoC)));
+    
+    
+    /*2*/
+    FileReader arq;
+    try {
+      arq = new FileReader("./objetos/maca2.byu");
+      BufferedReader lerArq = new BufferedReader(arq);
+      
+      String linha = lerArq.readLine(); //lê a primeira linha e armazena na String linha
+      String[] strA = linha.split(" "); //corta a String linha e armazena o no de Vertices em strA
+      ArrayList<Vertice> vertices = new ArrayList<Vertice>();
+   
+      for (int i = 2; i <= Integer.parseInt(strA[0]) + 1; i++) {
+        linha = lerArq.readLine(); 
+        
+        String[] strB = linha.split(" ");
+        
+        Vertice v = new Vertice(Float.parseFloat(strB[0]), Float.parseFloat(strB[1]));
+        vertices.add(v); 
+      }
+
+      DesenhoView window = new DesenhoView(vertices);
+      window.vertices = normaliza(500, 500, vertices);
+      window.frame.setVisible(true);
+      
+      arq.close();
+    } catch (IOException e) {
+      System.err.printf("Erro na abertura do arquivo: %s.\n", e.getMessage());
+    }
+    
   }
+  
+  public static ArrayList<Vertice> normaliza(int width, int height, ArrayList<Vertice> vertices) {
+    ArrayList<Vertice> vertices2 = new ArrayList<Vertice>();
+    
+    float xMin = achaXmin(vertices);
+    float xMax = achaXmax(vertices);
+    float yMin = achaYmin(vertices);
+    float yMax = achaYmax(vertices);
+    
+    for (Vertice vertice: vertices) {
+      vertice.x = ( ( vertice.x - xMin )/( xMax - xMin ) ) * (width - 1);
+      vertice.y = ( ( vertice.y - yMin )/( yMax - yMin ) ) * (height - 1);
+      vertices2.add(vertice);
+    }
+    
+    return vertices2;
+  }
+  
+  public static float achaXmin(ArrayList<Vertice> vertice) {
+    float xMin = 0f;
+    
+    for(Vertice vertices: vertice) {
+      if(vertices.x < xMin)
+        xMin = vertices.x;
+    }
+    
+    return xMin;
+  }
+  
+  public static float achaXmax(ArrayList<Vertice> vertice) {
+    float xMax = 0f;
+    
+    for(Vertice vertices: vertice) {
+      if(vertices.x > xMax)
+        xMax = vertices.x;
+    }
+    
+    return xMax;
+  }
+  
+  public static float achaYmin(ArrayList<Vertice> vertice) {
+    float yMin = 0f;
+    
+    for(Vertice vertices: vertice) {
+      if(vertices.y < yMin)
+        yMin = vertices.y;
+    }
+    
+    return yMin;
+  }
+  
+  public static float achaYmax(ArrayList<Vertice> vertice) {
+    float yMax = 0f;
+    
+    for(Vertice vertices: vertice) {
+      if(vertices.y > yMax)
+        yMax = vertices.y;
+    }
+    
+    return yMax;
+  }
+  
   
 }

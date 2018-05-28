@@ -18,7 +18,7 @@ public class LibMath {
     if(a[0].length != b.length) throw new RuntimeException("Dimensões inconsistentes. Impossível multiplicar as matrizes");
 
     result = new float[ a.length ][ b[0].length ];
-
+    
     for (int i = 0; i < a.length; i++)
       for (int j = 0; j < b[0].length; j++) 
         for (int k = 0; k < a[0].length; k++) 
@@ -118,9 +118,9 @@ public class LibMath {
   public float[] baric2Cartes(float cdBaric[], float a[], float b[], float c[]) {
     a[0] = cdBaric[0] * a[0]; a[1] = cdBaric[0] * a[1]; //alpha * a
     b[0] = cdBaric[1] * b[0]; b[1] = cdBaric[1] * b[1]; //beta * b
-    c[0] = cdBaric[2] * a[0]; c[1] = cdBaric[2] * c[1]; //gama * c
+    c[0] = cdBaric[2] * c[0]; c[1] = cdBaric[2] * c[1]; //gama * c
     
-    float result[] = {( a[0]+b[0]+c[0] ),( a[1]+b[1]+c[1])};
+    float result[] = {( a[0]+b[0]+c[0] ),( a[1]+b[1]+c[1] )};
     
     return result;
   }
