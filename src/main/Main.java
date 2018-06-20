@@ -10,12 +10,18 @@ Aluno: José Bartolomeu Alheiros Dias Neto
 package main;
 
 import java.io.BufferedReader;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 
 public class Main {
+	
+	static FileReader arq;
+	static BufferedReader lerArq;
+	static String linha; 
+	static String[] str;
  
   public static void main(String[] args) {  
     /*(a)*/
@@ -108,6 +114,8 @@ public class Main {
       System.err.printf("Erro na abertura do arquivo: %s.\n", e.getMessage());
     }
     
+    carregaCamera();
+    
   }
   
   public static ArrayList<Vertice> normaliza(int width, int height, ArrayList<Vertice> vertices) {
@@ -171,5 +179,77 @@ public class Main {
     return yMax;
   }
   
+  public static void carregaCamera() {
+  	
+  	try {
+  		arq = new FileReader("./parametrosCamera/parametrosCam.cam");
+  		lerArq = new BufferedReader(arq);
+  		
+  		int[] n = new int[3];
+  		int[] v = new int[3];
+  		int[] u = new int[3]; 
+  		int[] c = new int[3];
+  		
+  		cortaLinha();
+  		n[0] = Integer.parseInt(str[2]);
+  		n[1] = Integer.parseInt(str[3]);
+  		n[2] = Integer.parseInt(str[4]);
+  		
+  		for (int i = 0; i < n.length; i++) {
+  			System.out.print(n[i]);
+  		}
+  		System.out.println();
+  		
+  		cortaLinha();
+  		v[0] = Integer.parseInt(str[2]);
+  		v[1] = Integer.parseInt(str[3]);
+  		v[2] = Integer.parseInt(str[4]);
+  		
+   		for (int i = 0; i < v.length; i++) {
+  			System.out.print(v[i]);
+  		}
+   		System.out.println();
+   		
+  		cortaLinha();
+  		u[0] = Integer.parseInt(str[2]);
+  		u[1] = Integer.parseInt(str[3]);
+  		u[2] = Integer.parseInt(str[4]);
+  		
+   		for (int i = 0; i < u.length; i++) {
+  			System.out.print(u[i]);
+  		}
+   		System.out.println();
+   		
+   		cortaLinha();
+  		int d = Integer.parseInt(str[2]);
+  		System.out.println(d);
+  		
+  		cortaLinha();
+  		int hx = Integer.parseInt(str[2]);
+  		System.out.println(hx);
+  		
+  		cortaLinha();
+  		int hy = Integer.parseInt(str[2]);
+  		System.out.println(hy);
+  	
+  		cortaLinha();
+  		c[0] = Integer.parseInt(str[2]);
+  		c[1] = Integer.parseInt(str[3]);
+  		c[2] = Integer.parseInt(str[4]);
+  		
+   		for (int i = 0; i < c.length; i++) {
+  			System.out.print(c[i]);
+  		}
+  		
+		} catch (FileNotFoundException e) {
+			System.err.printf("Erro na abertura do arquivo: %s.\n", e.getMessage());
+		} catch (IOException e) {
+			System.err.printf("Erro na leitura do arquivo: %s.\n", e.getMessage());
+		}
+  }
   
+  public static void cortaLinha() throws IOException {
+  	linha = lerArq.readLine(); 
+		str = linha.split(" ");
+	}
 }
