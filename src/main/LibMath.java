@@ -55,7 +55,7 @@ public class LibMath {
     return result;
   }
 
-  /*Efetua o produto escalar entre dois vetores a e b.*/
+  /* Produto Escalar entre dois vetores 3D */
   public float produtoEscalar(float a[], float b[]) {
     float result;
 
@@ -64,12 +64,28 @@ public class LibMath {
     return result;
   }
 
+  /* Produto Vetorial entre dois vetores 3D */
   public float[] produtoVetorial(float a[], float b[]) {
     float result[] = {0,0,0};
     
-    result[0] = (a[1]*b[2])-(b[1]*a[2]);
-    result[1] = -((a[0]*b[2])-(b[0]*a[2]));
-    result[2] = (a[0]*b[1])-(b[0]*a[1]);
+    /* Sarrus */
+    if ( ( (a[1]*b[2]) - (a[2]*b[1]) ) == 0 ) {
+    	result[0] = Math.abs( (a[1]*b[2]) - (a[2]*b[1]) );
+    } else {
+    	result[0] = (a[1]*b[2]) - (a[2]*b[1]);
+    }
+    
+    if ( ( (a[2]*b[0]) - (a[0]*b[2]) ) == 0 ) {
+    	result[1] = Math.abs( (a[2]*b[0]) - (a[0]*b[2]) );
+    } else {
+    	result[1] = (a[2]*b[0]) - (a[0]*b[2]);
+    }
+    	
+    if ( (a[0]*b[1]) >= (a[1]*b[0]) ) {
+    	result[2] = Math.abs( (a[0]*b[1]) - (a[1]*b[0]) );
+    } else {
+    	result[2] = (a[0]*b[1]) - (a[1]*b[0]);
+    }
     
     return result;
   }
@@ -77,7 +93,8 @@ public class LibMath {
   public float norma(float v[]) {
     float result ;
     
-    result = (float) Math.sqrt(Math.pow(Double.parseDouble(Float.toString(v[0])),2)+Math.pow(Double.parseDouble(Float.toString(v[1])), 2)+Math.pow(Double.parseDouble(Float.toString(v[2])), 2));
+    result = (float) Math.sqrt(Math.pow(Double.parseDouble(Float.toString(v[0])),2)
+    		+ Math.pow(Double.parseDouble(Float.toString(v[1])), 2) + Math.pow(Double.parseDouble(Float.toString(v[2])), 2));
     
     return result;
   }

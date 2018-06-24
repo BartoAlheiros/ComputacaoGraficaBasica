@@ -9,7 +9,6 @@ Aluno: José Bartolomeu Alheiros Dias Neto
 
 package main;
 
-import java.awt.event.KeyAdapter;
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -20,6 +19,7 @@ import java.util.Arrays;
 
 import javax.swing.JFrame;
 
+@SuppressWarnings("serial")
 public class Main extends JFrame {
 
 	static FileReader arq;
@@ -27,6 +27,8 @@ public class Main extends JFrame {
 	static String linha; 
 	static String[] str;
 	static LibMath lib = new LibMath();
+	static float[] vLinha, u, v, n, c;
+	static float[][] pLinha;
 
 	public static void main(String[] args) {  
 		/*(a)*/
@@ -63,13 +65,13 @@ public class Main extends JFrame {
 		System.out.println();
 
 		/*(e)*/
-		float n = lib.norma(v1);
+		float normaV1 = lib.norma(v1);
 		System.out.println("Letra E: ");
-		System.out.println(n);
+		System.out.println(normaV1);
 		System.out.println();
 
 		/*(f)*/
-		System.out.println("Letra F: ");lib.imprimeVetor(lib.normaliza(v1, n));
+		System.out.println("Letra F: ");lib.imprimeVetor(lib.normaliza(v1, normaV1));
 		System.out.println();
 
 		/*(g)*/
@@ -99,9 +101,25 @@ public class Main extends JFrame {
 			//obtem dado do teclado
 			try {
 				in = inFromUser.readLine();
+				System.out.println("Digite p para fornecer o ponto P ou r para recarregar os parametros de camera"); 
 				if (in.equals("r")) {
 					carregaCamera();
 					carregaArquivo();
+				} else if (in.equals("p")) {
+					carregaCamera();
+					carregaArquivo();
+					
+					float[] P = new float[3];
+					in = inFromUser.readLine();
+					P[0] = Float.parseFloat(in);
+					in = inFromUser.readLine();
+					P[1] = Float.parseFloat(in);
+					in = inFromUser.readLine();
+					P[2] = Float.parseFloat(in);
+					
+					/* Convertendo do sistema de coordenadas mundial para o sistema de vista */
+					u = Gram_Schmidt(v, n);
+					pLinha = Mundial_to_Vista(P);
 				}
 			} catch (IOException e) {
 				System.out.println(e.getMessage());
@@ -204,11 +222,8 @@ public class Main extends JFrame {
 			arq = new FileReader("./parametrosCamera/parametrosCam.cam");
 			lerArq = new BufferedReader(arq);
 
-			float[] n = new float[3];
 			float[] v = new float[3];
-			float[] u = new float[3]; 
-			float[] c = new float[3];
-
+			
 			cortaLinha();
 			n[0] = Integer.parseInt(str[2]);
 			n[1] = Integer.parseInt(str[3]);
@@ -228,7 +243,8 @@ public class Main extends JFrame {
 				System.out.print(v[i]);
 			}
 			System.out.println();
-
+			
+			// inicializa u
 			cortaLinha();
 			u[0] = Integer.parseInt(str[2]);
 			u[1] = Integer.parseInt(str[3]);
@@ -259,8 +275,10 @@ public class Main extends JFrame {
 			for (int i = 0; i < c.length; i++) {
 				System.out.print(c[i]);
 			}
-			
-			
+	
+			for (int i = 0; i < u.length; i++) {
+				System.out.print(u[i]);
+			}
 
 		} catch (FileNotFoundException e) {
 			System.err.printf("Erro na abertura do arquivo: %s.\n", e.getMessage());
@@ -269,9 +287,57 @@ public class Main extends JFrame {
 		}
 	}
 	
-	public static void gramSchmidt(float[] v, float[] n) {
-		float[] vLinha = new float[3];
-		vLinha = lib.subtraiVetor(v, lib.produtoVetorial(v, b)) 
+	public static float[][] Mundial_to_Vista(float[] p) {
+		float[][] pSubCCol;
+		float[] pSubC;
+		
+		// obtendo as normas de U, V, N
+		float normaU = lib.norma(u);
+		float normaVLinha = lib.norma(vLinha);
+		float normaN = lib.norma(n);
+		// obtendo a base ortonormal do sistema de vista alpha
+		float nBarra[] = {1/normaN * n[0], 1/normaN * n[1], 1/normaN * n[2]};
+		float vLinhaBarra[] = {1/normaVLinha * v[0], 1/normaVLinha * v[1], 1/normaVLinha * v[2]};
+		float uBarra[] = {1/normaU * u[0], 1/normaU * u[1], 1/normaU * u[2]};
+		
+		// matriz de conversão de bases I
+		float[][] I = { { uBarra[0], uBarra[1], uBarra[2] }, 
+									  { vLinhaBarra[0], vLinhaBarra[1], vLinhaBarra[2] }, 
+									  { nBarra[0], nBarra[1], nBarra[2] } };
+		
+		// (P - C)
+		pSubC = lib.subtraiVetor(p, c);
+		// colocando (P - C) em uma Matriz Coluna
+		pSubCCol = new float[3][1];
+		pSubCCol[0][0] = pSubC[0]; 
+		pSubCCol[1][0] = pSubC[1]; 
+		pSubCCol[2][0] = pSubC[2];
+		
+		// calculando e devolvendo pLinha
+		return lib.calculaProduto(I, pSubCCol);
+	}
+	
+	/* processo de Gram-Schmidt para ortogonalizar V */
+	public static float[] Gram_Schmidt(float[] v, float[] n) {
+		/* produto escalar entre V e N = <V,N> */
+		float Vn = lib.produtoEscalar(v, n);
+		/* produto escalar entre N e N = <N,N> */
+		float Nn = lib.produtoEscalar(n, n);
+		
+		/* salvando o Inverso do produto escalar entre N e N em um vetor extra */
+		float invNn = 1/Nn;
+		
+		/* Calculando V' */
+		float e = Vn * invNn; // escalar resultado dos produtos escalares entre <V,N> e inv<N,N> tal que: < <V,N>, inv<N,N> > = <V,N>/<N,N>
+		/* multiplicando o escalar(e) obtido pelo vetor N e salvando no vetor  
+		 * resultInt(resultadoIntermediario) */
+		float[] resultInt = {n[0]*e, n[1]*e, n[2]*e};
+		vLinha = lib.subtraiVetor(v, resultInt);
+		
+		/* Calculando e devolvendo U */
+		float[] u = lib.produtoVetorial(n, vLinha);
+		
+		return u;
 	}
 
 	public static void cortaLinha() throws IOException {
