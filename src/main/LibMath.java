@@ -15,15 +15,22 @@ public class LibMath {
 
   /* Calcula o produto de duas matrizes passadas como argumento. */
   public float[][] calculaProduto(float a[][], float b[][]) {
+  	float somaprod = 0;
+  	/* verifica se o número de linhas da primeira é igual ao número de colunas da segunda*/
     if(a[0].length != b.length) throw new RuntimeException("Dimensões inconsistentes. Impossível multiplicar as matrizes");
 
     result = new float[ a.length ][ b[0].length ];
     
-    for (int i = 0; i < a.length; i++)
-      for (int j = 0; j < b[0].length; j++) 
-        for (int k = 0; k < a[0].length; k++) 
-          result[i][j] += (a[i][k] * b[k][j]);
-
+    for (int i = 0; i < a.length; i++) {
+    	for (int j = 0; j < b[0].length; j++) {
+    		somaprod = 0;
+    		for (int k = 0; k < a[0].length; k++) { 
+    			 somaprod += (a[i][k] * b[k][j]);
+    			 result[i][j] = somaprod;
+    		}
+    	}
+    }
+    
     return result ;
   }
 

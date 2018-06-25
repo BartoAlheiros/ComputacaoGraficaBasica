@@ -108,7 +108,7 @@ public class Main extends JFrame {
 				} else if (in.equals("p")) {
 					carregaCamera();
 					carregaArquivo();
-					
+
 					float[] P = new float[3];
 					in = inFromUser.readLine();
 					P[0] = Float.parseFloat(in);
@@ -116,10 +116,18 @@ public class Main extends JFrame {
 					P[1] = Float.parseFloat(in);
 					in = inFromUser.readLine();
 					P[2] = Float.parseFloat(in);
-					
+
 					/* Convertendo do sistema de coordenadas mundial para o sistema de vista */
 					u = Gram_Schmidt(v, n);
 					pLinha = Mundial_to_Vista(P);
+
+					System.out.println("pLinha: ");
+					for (int l = 0; l < pLinha.length; l++)  {  
+						for (int c = 0; c < pLinha[0].length; c++)     { 
+							System.out.print(pLinha[l][c] + " "); //imprime caracter a caracter
+						}  
+						System.out.println(" "); //muda de linha
+					}
 				}
 			} catch (IOException e) {
 				System.out.println(e.getMessage());
@@ -222,7 +230,10 @@ public class Main extends JFrame {
 			arq = new FileReader("./parametrosCamera/parametrosCam.cam");
 			lerArq = new BufferedReader(arq);
 
-			float[] v = new float[3];
+			v = new float[3];
+			n = new float[3];
+			u = new float[3];
+			c = new float[3];
 			
 			cortaLinha();
 			n[0] = Integer.parseInt(str[2]);
@@ -295,10 +306,17 @@ public class Main extends JFrame {
 		float normaU = lib.norma(u);
 		float normaVLinha = lib.norma(vLinha);
 		float normaN = lib.norma(n);
+		System.out.println("Norma de vLinha: " + normaVLinha); //ok
 		// obtendo a base ortonormal do sistema de vista alpha
 		float nBarra[] = {1/normaN * n[0], 1/normaN * n[1], 1/normaN * n[2]};
-		float vLinhaBarra[] = {1/normaVLinha * v[0], 1/normaVLinha * v[1], 1/normaVLinha * v[2]};
+		float vLinhaBarra[] = {(1/normaVLinha) * vLinha[0], (1/normaVLinha) * vLinha[1], (1/normaVLinha) * vLinha[2]};
 		float uBarra[] = {1/normaU * u[0], 1/normaU * u[1], 1/normaU * u[2]};
+	
+		System.out.println("vLinhaBarra: ");
+		
+		for (int i = 0; i < vLinhaBarra.length; i++) {
+			System.out.print(vLinhaBarra[i]);
+		}
 		
 		// matriz de conversão de bases I
 		float[][] I = { { uBarra[0], uBarra[1], uBarra[2] }, 
@@ -312,6 +330,14 @@ public class Main extends JFrame {
 		pSubCCol[0][0] = pSubC[0]; 
 		pSubCCol[1][0] = pSubC[1]; 
 		pSubCCol[2][0] = pSubC[2];
+		System.out.println("pSubCCol: ");
+		for (int l = 0; l < pSubCCol.length; l++)  {  
+			for (int c = 0; c < pSubCCol[0].length; c++)     { 
+				System.out.print(pSubCCol[l][c] + " "); //imprime caracter a caracter
+			}  
+			System.out.println(" "); //muda de linha
+		}
+		
 		
 		// calculando e devolvendo pLinha
 		return lib.calculaProduto(I, pSubCCol);
@@ -331,11 +357,26 @@ public class Main extends JFrame {
 		float e = Vn * invNn; // escalar resultado dos produtos escalares entre <V,N> e inv<N,N> tal que: < <V,N>, inv<N,N> > = <V,N>/<N,N>
 		/* multiplicando o escalar(e) obtido pelo vetor N e salvando no vetor  
 		 * resultInt(resultadoIntermediario) */
+		System.out.println("Valor de e: " + e);
 		float[] resultInt = {n[0]*e, n[1]*e, n[2]*e};
+		System.out.println("e x N: ");
+		for (int i = 0; i < resultInt.length; i++) {
+			System.out.print(resultInt[i]);
+		}
+		System.out.println("");
 		vLinha = lib.subtraiVetor(v, resultInt);
+		System.out.println("vLinha: ");
+		for (int i = 0; i < vLinha.length; i++) {
+			System.out.print(vLinha[i]);
+		}
+		System.out.println("");
 		
 		/* Calculando e devolvendo U */
 		float[] u = lib.produtoVetorial(n, vLinha);
+		for (int i = 0; i < u.length; i++) {
+			System.out.print(u[i]);
+		}
+		System.out.println("");
 		
 		return u;
 	}
