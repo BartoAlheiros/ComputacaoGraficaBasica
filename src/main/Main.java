@@ -9,6 +9,8 @@ Aluno: José Bartolomeu Alheiros Dias Neto
 
 package main;
 
+import java.awt.Dimension;
+import java.awt.Toolkit;
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -29,6 +31,7 @@ public class Main extends JFrame {
 	static LibMath lib = new LibMath();
 	static float[] vLinha, u, v, n, c;
 	static float[][] pLinha;
+	static int d, hx, hy;
 
 	public static void main(String[] args) {  
 		/*(a)*/
@@ -267,15 +270,15 @@ public class Main extends JFrame {
 			System.out.println();
 
 			cortaLinha();
-			int d = Integer.parseInt(str[2]);
+			d = Integer.parseInt(str[2]);
 			System.out.println(d);
 
 			cortaLinha();
-			int hx = Integer.parseInt(str[2]);
+			hx = Integer.parseInt(str[2]);
 			System.out.println(hx);
 
 			cortaLinha();
-			int hy = Integer.parseInt(str[2]);
+			hy = Integer.parseInt(str[2]);
 			System.out.println(hy);
 
 			cortaLinha();
@@ -338,7 +341,6 @@ public class Main extends JFrame {
 			System.out.println(" "); //muda de linha
 		}
 		
-		
 		// calculando e devolvendo pLinha
 		return lib.calculaProduto(I, pSubCCol);
 	}
@@ -379,6 +381,30 @@ public class Main extends JFrame {
 		System.out.println("");
 		
 		return u;
+	}
+	
+	public static void projecaoEmPerspectiva() {
+		/* Realizando a projeção em perspectiva. */
+		float xv = pLinha[0][0];
+		float yv = pLinha[0][1];
+		float zv = pLinha[0][2];
+		float xs = d * (xv/zv);
+		float ys = d * (yv/zv);
+		float[] pBarra = {xs, ys};
+		
+		/* Convertendo as coordenadas xs e ys para coordenadas normalizadas. */
+		float xsBarra = xs/hx;
+		float ysBarra = ys/hy;
+		
+		/* Convertendo as coordenadas normalizadas(xsBarra, ysBarra) para Coordenadas de Tela. */
+		// Pegando o x e o y da tela
+		Toolkit tk = Toolkit.getDefaultToolkit();
+    Dimension d = tk.getScreenSize();
+    double resX = d.getWidth();
+    double resY = d.getHeight();
+    
+    double i = Math.floor((xsBarra+1)/2 * resX + 0.5);
+    double j = Math.floor(resY - ( (ysBarra + 1)/2 + 0.5) );
 	}
 
 	public static void cortaLinha() throws IOException {
