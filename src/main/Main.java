@@ -121,7 +121,7 @@ public class Main extends JFrame {
 					P[2] = Float.parseFloat(in);
 
 					/* Convertendo do sistema de coordenadas mundial para o sistema de vista */
-					u = Gram_Schmidt(v, n);
+					u = Gram_Schmidt();
 					pLinha = Mundial_to_Vista(P);
 
 					System.out.println("pLinha: ");
@@ -137,6 +137,7 @@ public class Main extends JFrame {
 			}
 		}
 	}
+	
 	public static ArrayList<Vertice> normaliza(int width, int height, ArrayList<Vertice> vertices) {
 		ArrayList<Vertice> vertices2 = new ArrayList<Vertice>();
 
@@ -154,45 +155,45 @@ public class Main extends JFrame {
 		return vertices2;
 	}
 
-	public static float achaXmin(ArrayList<Vertice> vertice) {
+	public static float achaXmin(ArrayList<Vertice> vertices) {
 		float xMin = 0f;
 
-		for(Vertice vertices: vertice) {
-			if(vertices.x < xMin)
-				xMin = vertices.x;
+		for(Vertice vertice: vertices) {
+			if(vertice.x < xMin)
+				xMin = vertice.x;
 		}
 
 		return xMin;
 	}
 
-	public static float achaXmax(ArrayList<Vertice> vertice) {
+	public static float achaXmax(ArrayList<Vertice> vertices) {
 		float xMax = 0f;
 
-		for(Vertice vertices: vertice) {
-			if(vertices.x > xMax)
-				xMax = vertices.x;
+		for(Vertice vertice: vertices) {
+			if(vertice.x > xMax)
+				xMax = vertice.x;
 		}
 
 		return xMax;
 	}
 
-	public static float achaYmin(ArrayList<Vertice> vertice) {
+	public static float achaYmin(ArrayList<Vertice> vertices) {
 		float yMin = 0f;
 
-		for(Vertice vertices: vertice) {
-			if(vertices.y < yMin)
-				yMin = vertices.y;
+		for(Vertice vertice: vertices) {
+			if(vertice.y < yMin)
+				yMin = vertice.y;
 		}
 
 		return yMin;
 	}
 
-	public static float achaYmax(ArrayList<Vertice> vertice) {
+	public static float achaYmax(ArrayList<Vertice> vertices) {
 		float yMax = 0f;
 
-		for(Vertice vertices: vertice) {
-			if(vertices.y > yMax)
-				yMax = vertices.y;
+		for(Vertice vertice: vertices) {
+			if(vertice.y > yMax)
+				yMax = vertice.y;
 		}
 
 		return yMax;
@@ -206,10 +207,13 @@ public class Main extends JFrame {
 			BufferedReader lerArq = new BufferedReader(arq);
 
 			String linha = lerArq.readLine(); //lê a primeira linha e armazena na String linha
-			String[] strA = linha.split(" "); //corta a String linha e armazena o no de Vertices em strA
-			ArrayList<Vertice> vertices = new ArrayList<Vertice>();
+			String[] strA = linha.split(" "); //corta a primera linha e armazena no array strA
+			ArrayList<Vertice> vertices = new ArrayList<>();
+			ArrayList<Triangulo> triangulos = new ArrayList<>();
+			int i;
 
-			for (int i = 2; i <= Integer.parseInt(strA[0]) + 1; i++) {
+			// carregando os vértices do polígono
+			for (i = 2; i <= Integer.parseInt(strA[0]) + 1; i++) {
 				linha = lerArq.readLine(); 
 
 				String[] strB = linha.split(" ");
@@ -217,7 +221,38 @@ public class Main extends JFrame {
 				Vertice v = new Vertice(Float.parseFloat(strB[0]), Float.parseFloat(strB[1]));
 				vertices.add(v); 
 			}
+			
+			/* Para cada linha de triângulo no arquivo, adiciona um triângulo no ArrayList 
+			 * - juntamente com seus índices lidos do arquivo */
+			for (int j = i; j <= Integer.parseInt(strA[1]); j++) {
+				linha = lerArq.readLine(); 
 
+				String[] strB = linha.split(" ");
+				
+				Triangulo t = new Triangulo(Integer.parseInt(strB[0]), Integer.parseInt(strB[1]), Integer.parseInt(strB[2]));
+				triangulos.add(t);
+			}
+			
+			/*Para cada triângulo, adiciona seus vértices - que pertencem ao polígono - , baseado nos índices já salvos anteriormente*/
+			for (Triangulo t: triangulos) {
+				ArrayList<Vertice> verticesTriangulo = new ArrayList<>();
+				
+				verticesTriangulo.add(vertices.get(t.getI1())); 
+				verticesTriangulo.add(vertices.get(t.getI2())); 
+				verticesTriangulo.add(vertices.get(t.getI3()));
+				
+				t.setVertices(verticesTriangulo);
+			}
+			
+			// passando as coordenadas de cada vertice do polígono do sistema mundial para o sistema de vista
+			for (Vertice vertice: vertices) {
+				float[] p = vertice.getXY();
+				p[2] = 0;
+				float[] pLinha = Mundial_to_Vista(p);
+				vertice.x = pLinha[0]; vertice.y = pLinha[1];
+			}
+			
+			// instancia uma janela e repassa os vértices para que sejam pintados nela
 			DesenhoView window = new DesenhoView(vertices);
 			window.vertices = normaliza(500, 500, vertices);
 			window.frame.setVisible(true);
@@ -301,7 +336,9 @@ public class Main extends JFrame {
 		}
 	}
 	
-	public static float[][] Mundial_to_Vista(float[] p) {
+	/*Recebe um ponto p do polígono no sistema de coordenadas mundial, converte para o sistema de coordenadas de vista
+	 * e devolve p'(ponto no sistema de vista).*/
+	public static float[] Mundial_to_Vista(float[] p) {
 		float[][] pSubCCol;
 		float[] pSubC;
 		
@@ -331,55 +368,39 @@ public class Main extends JFrame {
 		// colocando (P - C) em uma Matriz Coluna
 		pSubCCol = new float[3][1];
 		pSubCCol[0][0] = pSubC[0]; 
-		pSubCCol[1][0] = pSubC[1]; 
+		pSubCCol[1][0] = pSubC[1];
 		pSubCCol[2][0] = pSubC[2];
-		System.out.println("pSubCCol: ");
-		for (int l = 0; l < pSubCCol.length; l++)  {  
-			for (int c = 0; c < pSubCCol[0].length; c++)     { 
-				System.out.print(pSubCCol[l][c] + " "); //imprime caracter a caracter
-			}  
-			System.out.println(" "); //muda de linha
-		}
 		
 		// calculando e devolvendo pLinha
-		return lib.calculaProduto(I, pSubCCol);
+		float[][] pLinha = lib.calculaProduto(I, pSubCCol);
+		
+		// convertendo a matriz acima em um vetor para facilitar os cálculos
+		float[] pLinhaVet = {pLinha[0][0], pLinha[1][0], pLinha[2][0]};
+		
+		return pLinhaVet;
 	}
 	
 	/* processo de Gram-Schmidt para ortogonalizar V */
-	public static float[] Gram_Schmidt(float[] v, float[] n) {
+	public static float[] Gram_Schmidt() {
 		/* produto escalar entre V e N = <V,N> */
 		float Vn = lib.produtoEscalar(v, n);
 		/* produto escalar entre N e N = <N,N> */
 		float Nn = lib.produtoEscalar(n, n);
 		
-		/* salvando o Inverso do produto escalar entre N e N em um vetor extra */
+		/* salvando o Inverso do produto escalar entre N e N em uma variável extra */
 		float invNn = 1/Nn;
 		
+		// Ortogonalizando V:
 		/* Calculando V' */
 		float e = Vn * invNn; // escalar resultado dos produtos escalares entre <V,N> e inv<N,N> tal que: < <V,N>, inv<N,N> > = <V,N>/<N,N>
 		/* multiplicando o escalar(e) obtido pelo vetor N e salvando no vetor  
 		 * resultInt(resultadoIntermediario) */
-		System.out.println("Valor de e: " + e);
 		float[] resultInt = {n[0]*e, n[1]*e, n[2]*e};
-		System.out.println("e x N: ");
-		for (int i = 0; i < resultInt.length; i++) {
-			System.out.print(resultInt[i]);
-		}
-		System.out.println("");
+		// último passo para obter vLinha:
 		vLinha = lib.subtraiVetor(v, resultInt);
-		System.out.println("vLinha: ");
-		for (int i = 0; i < vLinha.length; i++) {
-			System.out.print(vLinha[i]);
-		}
-		System.out.println("");
-		
+	
 		/* Calculando e devolvendo U */
-		float[] u = lib.produtoVetorial(n, vLinha);
-		for (int i = 0; i < u.length; i++) {
-			System.out.print(u[i]);
-		}
-		System.out.println("");
-		
+		float[] u = lib.produtoVetorial(n, vLinha);		
 		return u;
 	}
 	
@@ -406,6 +427,8 @@ public class Main extends JFrame {
     double i = Math.floor((xsBarra+1)/2 * resX + 0.5);
     double j = Math.floor(resY - ( (ysBarra + 1)/2 + 0.5) );
 	}
+	
+	public static void scanLine() {}
 
 	public static void cortaLinha() throws IOException {
 		linha = lerArq.readLine(); 

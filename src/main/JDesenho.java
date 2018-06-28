@@ -21,6 +21,7 @@ public class JDesenho extends JPanel{
     g.setColor(Color.black);
     g.fillRect(0, 0, 500, 500);
     
+    // Pinta os pixels
     for(Vertice vertice: vertices) { 
       g.setColor(Color.white);
       g.fillRect( (int) vertice.x, (int) vertice.y, 1, 1 );
