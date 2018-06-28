@@ -34,65 +34,6 @@ public class Main extends JFrame {
 	static int d, hx, hy;
 
 	public static void main(String[] args) {  
-		/*(a)*/
-		float a[][] = { {1.5f, 2.5f, 3.5f}, 
-				{4.5f, 5.5f, 6.5f} };
-
-		float b[][] = { {7.5f, 8.5f}, 
-				{9.5f, 10.5f},
-				{11.5f,12.5f} };
-
-
-		float result[][] = lib.calculaProduto(a, b);
-		System.out.println("Letra A: ");
-		lib.imprimeMatriz(result);
-		System.out.println();
-
-		/*(b)*/
-		float v1[] = {3.5f, 1.5f, 2.0f};
-		float v2[] = {1.0f, 2.0f, 1.5f};
-
-		System.out.println("Letra B: ");
-		lib.imprimeVetor(lib.subtraiVetor(v1, v2));
-		System.out.println();
-
-		/*(c)*/
-		System.out.println("Letra C: ");
-		System.out.println(lib.produtoEscalar(v1, v2));
-		System.out.println();
-
-		/*(d)*/
-		float resultV[] = lib.produtoVetorial(v1, v2);
-		System.out.println("Letra D: ");
-		lib.imprimeVetor(resultV);
-		System.out.println();
-
-		/*(e)*/
-		float normaV1 = lib.norma(v1);
-		System.out.println("Letra E: ");
-		System.out.println(normaV1);
-		System.out.println();
-
-		/*(f)*/
-		System.out.println("Letra F: ");lib.imprimeVetor(lib.normaliza(v1, normaV1));
-		System.out.println();
-
-		/*(g)*/
-		float p[] = {-0.25f,0.75f};
-		float pontoA[] = {-1f,1f};
-		float pontoB[] = {0f,-1f};
-		float pontoC[] = {1f,1f};
-
-		System.out.println("Letra G: ");
-		System.out.println(Arrays.toString(lib.coordBaricentrica(p, pontoA, pontoB, pontoC)));
-		System.out.println();
-
-		/*(h)*/
-		float coordBaric[] = {0.5f,0.25f,0.25f};
-
-		System.out.println("Letra H: ");
-		System.out.println(Arrays.toString(lib.baric2Cartes(coordBaric, pontoA, pontoB, pontoC)));
-		
 		carregaCamera();
 		carregaArquivo();
 		BufferedReader inFromUser = new BufferedReader(new InputStreamReader(System.in));        
@@ -198,6 +139,66 @@ public class Main extends JFrame {
 
 		return yMax;
 	}
+	
+	// testa a primeira parte do projeto
+	public static void testesParte1() {
+		/*(a)*/
+		float a[][] = { {1.5f, 2.5f, 3.5f}, 
+										{4.5f, 5.5f, 6.5f} };
+
+		float b[][] = { {7.5f, 8.5f}, 
+										{9.5f, 10.5f},
+										{11.5f,12.5f} };
+
+		float result[][] = lib.calculaProduto(a, b);
+		System.out.println("Letra A: ");
+		lib.imprimeMatriz(result);
+		System.out.println();
+
+		/*(b)*/
+		float v1[] = {3.5f, 1.5f, 2.0f};
+		float v2[] = {1.0f, 2.0f, 1.5f};
+
+		System.out.println("Letra B: ");
+		lib.imprimeVetor(lib.subtraiVetor(v1, v2));
+		System.out.println();
+
+		/*(c)*/
+		System.out.println("Letra C: ");
+		System.out.println(lib.produtoEscalar(v1, v2));
+		System.out.println();
+
+		/*(d)*/
+		float resultV[] = lib.produtoVetorial(v1, v2);
+		System.out.println("Letra D: ");
+		lib.imprimeVetor(resultV);
+		System.out.println();
+
+		/*(e)*/
+		float normaV1 = lib.norma(v1);
+		System.out.println("Letra E: ");
+		System.out.println(normaV1);
+		System.out.println();
+
+		/*(f)*/
+		System.out.println("Letra F: ");lib.imprimeVetor(lib.normaliza(v1, normaV1));
+		System.out.println();
+
+		/*(g)*/
+		float p[] = {-0.25f,0.75f};
+		float pontoA[] = {-1f,1f};
+		float pontoB[] = {0f,-1f};
+		float pontoC[] = {1f,1f};
+
+		System.out.println("Letra G: ");
+		System.out.println(Arrays.toString(lib.coordBaricentrica(p, pontoA, pontoB, pontoC)));
+		System.out.println();
+
+		/*(h)*/
+		float coordBaric[] = {0.5f,0.25f,0.25f};
+		System.out.println("Letra H: ");
+		System.out.println(Arrays.toString(lib.baric2Cartes(coordBaric, pontoA, pontoB, pontoC)));
+	}
 
 	public static void carregaArquivo() {
 		/*2*/
@@ -223,7 +224,7 @@ public class Main extends JFrame {
 			}
 			
 			/* Para cada linha de triângulo no arquivo, adiciona um triângulo no ArrayList 
-			 * - juntamente com seus índices lidos do arquivo */
+			 * - juntamente com seus índices lidos do arquivo(carrega os triângulos */
 			for (int j = i; j <= Integer.parseInt(strA[1]); j++) {
 				linha = lerArq.readLine(); 
 
