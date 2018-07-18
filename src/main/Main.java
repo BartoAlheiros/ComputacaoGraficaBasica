@@ -1,9 +1,9 @@
 /*
  * UFRPE - Universidade Federal Rural de Pernambuco
-DC - Departamento de Computação
-Disiciplina: Computação Gráfica
-Professor: João Paulo
-Aluno: José Bartolomeu Alheiros Dias Neto
+DC - Departamento de ComputaÃ§Ã£o
+Disiciplina: ComputaÃ§Ã£o GrÃ¡fica
+Professor: JoÃ£o Paulo
+Aluno: JosÃ© Bartolomeu Alheiros Dias Neto
 
  */
 
@@ -40,18 +40,18 @@ public class Main extends JFrame {
 		String in = null;
 		
 		/* espera sempre uma entrada do teclado. Se ela for 'r', recarrega as
-		 * configurações da camera  o arquivo.*/
+		 * configuraï¿½ï¿½es da camera  o arquivo.*/
 		while (true) {  
 			//obtem dado do teclado
 			try {
 				in = inFromUser.readLine();
 				System.out.println("Digite p para fornecer o ponto P ou r para recarregar os parametros de camera"); 
 				if (in.equals("r")) {
-					carregaCamera();
 					carregaArquivo();
+					carregaCamera();
 				} else if (in.equals("p")) {
-					carregaCamera();
 					carregaArquivo();
+					carregaCamera();
 
 					float[] P = new float[3];
 					in = inFromUser.readLine();
@@ -207,13 +207,13 @@ public class Main extends JFrame {
 			arq = new FileReader("./objetos/maca2.byu");
 			BufferedReader lerArq = new BufferedReader(arq);
 
-			String linha = lerArq.readLine(); //lê a primeira linha e armazena na String linha
+			String linha = lerArq.readLine(); //lï¿½ a primeira linha e armazena na String linha
 			String[] strA = linha.split(" "); //corta a primera linha e armazena no array strA
 			ArrayList<Vertice> vertices = new ArrayList<>();
 			ArrayList<Triangulo> triangulos = new ArrayList<>();
 			int i;
 
-			// carregando os vértices do polígono
+			// carregando os vï¿½rtices do polï¿½gono
 			for (i = 2; i <= Integer.parseInt(strA[0]) + 1; i++) {
 				linha = lerArq.readLine(); 
 
@@ -223,8 +223,8 @@ public class Main extends JFrame {
 				vertices.add(v); 
 			}
 			
-			/* Para cada linha de triângulo no arquivo, adiciona um triângulo no ArrayList 
-			 * - juntamente com seus índices lidos do arquivo(carrega os triângulos */
+			/* Para cada linha de triï¿½ngulo no arquivo, adiciona um triï¿½ngulo no ArrayList 
+			 * - juntamente com seus ï¿½ndices lidos do arquivo(carrega os triï¿½ngulos */
 			for (int j = i; j <= Integer.parseInt(strA[1]); j++) {
 				linha = lerArq.readLine(); 
 
@@ -234,7 +234,7 @@ public class Main extends JFrame {
 				triangulos.add(t);
 			}
 			
-			/*Para cada triângulo, adiciona seus vértices - que pertencem ao polígono - , baseado nos índices já salvos anteriormente*/
+			/*Para cada triï¿½ngulo, adiciona seus vï¿½rtices - que pertencem ao polï¿½gono - , baseado nos ï¿½ndices jï¿½ salvos anteriormente*/
 			for (Triangulo t: triangulos) {
 				ArrayList<Vertice> verticesTriangulo = new ArrayList<>();
 				
@@ -245,7 +245,7 @@ public class Main extends JFrame {
 				t.setVertices(verticesTriangulo);
 			}
 			
-			// passando as coordenadas de cada vertice do polígono do sistema mundial para o sistema de vista
+			// passando as coordenadas de cada vertice do polï¿½gono do sistema mundial para o sistema de vista
 			for (Vertice vertice: vertices) {
 				float[] p = vertice.getXY();
 				p[2] = 0;
@@ -253,7 +253,7 @@ public class Main extends JFrame {
 				vertice.x = pLinha[0]; vertice.y = pLinha[1];
 			}
 			
-			// instancia uma janela e repassa os vértices para que sejam pintados nela
+			// instancia uma janela e repassa os vï¿½rtices para que sejam pintados nela
 			DesenhoView window = new DesenhoView(vertices);
 			window.vertices = normaliza(500, 500, vertices);
 			window.frame.setVisible(true);
@@ -337,7 +337,7 @@ public class Main extends JFrame {
 		}
 	}
 	
-	/*Recebe um ponto p do polígono no sistema de coordenadas mundial, converte para o sistema de coordenadas de vista
+	/*Recebe um ponto p do polÃ­gono no sistema de coordenadas mundial, converte para o sistema de coordenadas de vista
 	 * e devolve p'(ponto no sistema de vista).*/
 	public static float[] Mundial_to_Vista(float[] p) {
 		float[][] pSubCCol;
@@ -359,7 +359,7 @@ public class Main extends JFrame {
 			System.out.print(vLinhaBarra[i]);
 		}
 		
-		// matriz de conversão de bases I
+		// matriz de conversï¿½o de bases I
 		float[][] I = { { uBarra[0], uBarra[1], uBarra[2] }, 
 									  { vLinhaBarra[0], vLinhaBarra[1], vLinhaBarra[2] }, 
 									  { nBarra[0], nBarra[1], nBarra[2] } };
@@ -375,20 +375,20 @@ public class Main extends JFrame {
 		// calculando e devolvendo pLinha
 		float[][] pLinha = lib.calculaProduto(I, pSubCCol);
 		
-		// convertendo a matriz acima em um vetor para facilitar os cálculos
+		// convertendo a matriz acima em um vetor para facilitar os cï¿½lculos
 		float[] pLinhaVet = {pLinha[0][0], pLinha[1][0], pLinha[2][0]};
 		
 		return pLinhaVet;
 	}
 	
-	/* processo de Gram-Schmidt para ortogonalizar V */
+	/* processo de Gram-Schmidt para ortogonalizar V e calcular U */
 	public static float[] Gram_Schmidt() {
 		/* produto escalar entre V e N = <V,N> */
 		float Vn = lib.produtoEscalar(v, n);
 		/* produto escalar entre N e N = <N,N> */
 		float Nn = lib.produtoEscalar(n, n);
 		
-		/* salvando o Inverso do produto escalar entre N e N em uma variável extra */
+		/* salvando o Inverso do produto escalar entre N e N em uma variï¿½vel extra */
 		float invNn = 1/Nn;
 		
 		// Ortogonalizando V:
@@ -397,7 +397,7 @@ public class Main extends JFrame {
 		/* multiplicando o escalar(e) obtido pelo vetor N e salvando no vetor  
 		 * resultInt(resultadoIntermediario) */
 		float[] resultInt = {n[0]*e, n[1]*e, n[2]*e};
-		// último passo para obter vLinha:
+		// ï¿½ltimo passo para obter vLinha:
 		vLinha = lib.subtraiVetor(v, resultInt);
 	
 		/* Calculando e devolvendo U */
@@ -406,7 +406,7 @@ public class Main extends JFrame {
 	}
 	
 	public static void projecaoEmPerspectiva() {
-		/* Realizando a projeção em perspectiva. */
+		/* Realizando a projeï¿½ï¿½o em perspectiva. */
 		float xv = pLinha[0][0];
 		float yv = pLinha[0][1];
 		float zv = pLinha[0][2];
