@@ -29,7 +29,11 @@ public class Main extends JFrame {
 	static String linha; 
 	static String[] str;
 	static LibMath lib = new LibMath();
-	static float[] vLinha, u, v, n, c;
+	static float[] vLinha = new float[3];
+	static float[] u = new float[3];
+	static float[] v = new float[3];
+	static float[] n = new float[3];
+	static float[] c = new float[3];
 	static float[] pLinha;
 	static int d, hx, hy;
 	static double i, j; // coordenadas de tela
@@ -39,7 +43,7 @@ public class Main extends JFrame {
 		carregaArquivo();
 		BufferedReader inFromUser = new BufferedReader(new InputStreamReader(System.in));        
 		String in = null;
-		
+
 		/* espera sempre uma entrada do teclado. Se ela for 'r', recarrega as
 		 * configura��es da camera  o arquivo.*/
 		while (true) {  
@@ -63,18 +67,18 @@ public class Main extends JFrame {
 					P[2] = Float.parseFloat(in);
 
 					/* Convertendo do sistema de coordenadas mundial para o sistema de vista */
-					u = Gram_Schmidt();
+					Gram_Schmidt();
 					pLinha = Mundial_to_Vista(P);
 
-					System.out.println("pLinha: " + pLinha);
-					
+					System.out.println(Arrays.toString(pLinha));
+
 				}
 			} catch (IOException e) {
 				System.out.println(e.getMessage());
 			}
 		}
 	}
-	
+
 	public static ArrayList<Vertice> normaliza(int width, int height, ArrayList<Vertice> vertices) {
 		ArrayList<Vertice> vertices2 = new ArrayList<Vertice>();
 
@@ -135,16 +139,16 @@ public class Main extends JFrame {
 
 		return yMax;
 	}
-	
+
 	// testa a primeira parte do projeto
 	public static void testesParte1() {
 		/*(a)*/
 		float a[][] = { {1.5f, 2.5f, 3.5f}, 
-										{4.5f, 5.5f, 6.5f} };
+				{4.5f, 5.5f, 6.5f} };
 
 		float b[][] = { {7.5f, 8.5f}, 
-										{9.5f, 10.5f},
-										{11.5f,12.5f} };
+				{9.5f, 10.5f},
+				{11.5f,12.5f} };
 
 		float result[][] = lib.calculaProduto(a, b);
 		System.out.println("Letra A: ");
@@ -209,46 +213,51 @@ public class Main extends JFrame {
 			ArrayList<Triangulo> triangulos = new ArrayList<>();
 			int i;
 
-			// carregando os v�rtices do pol�gono
+			// carregando os vértices do polígono em R3
 			for (i = 2; i <= Integer.parseInt(strA[0]) + 1; i++) {
 				linha = lerArq.readLine(); 
 
 				String[] strB = linha.split(" ");
 
-				Vertice v = new Vertice(Float.parseFloat(strB[0]), Float.parseFloat(strB[1]));
+				Vertice v = new Vertice(Float.parseFloat(strB[0]), Float.parseFloat(strB[1]), Float.parseFloat(strB[2]));
 				vertices.add(v); 
 			}
 			
+			// passando os vértices do sistema mundial para o sistema de Vista
+			for (Vertice v: vertices) {
+				Vertice v2 = new Vertice();
+				Mundial_to_Vista(v.getXYZ());
+			}
+
 			/* Para cada linha de triangulo no arquivo, adiciona um triangulo no ArrayList 
-			 * - juntamente com seus índices lidos do arquivo(carrega os triangulos */
+			 * - juntamente com seus índices lidos do arquivo(carrega os triangulos) */
 			for (int j = i; j <= Integer.parseInt(strA[1]); j++) {
 				linha = lerArq.readLine(); 
 
 				String[] strB = linha.split(" ");
-				
+
 				Triangulo t = new Triangulo(Integer.parseInt(strB[0]), Integer.parseInt(strB[1]), Integer.parseInt(strB[2]));
 				triangulos.add(t);
 			}
-			
-			/*Para cada tri�ngulo, adiciona seus v�rtices - que pertencem ao pol�gono - , baseado nos �ndices j� salvos anteriormente*/
+
+			/* Para cada triangulo, adiciona seus vértices - que pertencem ao polígono - , baseado nos índices já salvos anteriormente */
 			for (Triangulo t: triangulos) {
 				ArrayList<Vertice> verticesTriangulo = new ArrayList<>();
-				
+
 				verticesTriangulo.add(vertices.get(t.getI1())); 
 				verticesTriangulo.add(vertices.get(t.getI2())); 
 				verticesTriangulo.add(vertices.get(t.getI3()));
-				
+
 				t.setVertices(verticesTriangulo);
 			}
-			
-			// passando as coordenadas de cada vertice do pol�gono do sistema mundial para o sistema de vista
+
+			// passando as coordenadas de cada vertice do polígono do sistema mundial para o sistema de vista
 			for (Vertice vertice: vertices) {
 				float[] p = vertice.getXY();
-				p[2] = 0;
 				float[] pLinha = Mundial_to_Vista(p);
 				vertice.x = pLinha[0]; vertice.y = pLinha[1];
 			}
-			
+
 			// instancia uma janela e repassa os v�rtices para que sejam pintados nela
 			DesenhoView window = new DesenhoView(vertices);
 			window.vertices = normaliza(500, 500, vertices);
@@ -269,7 +278,7 @@ public class Main extends JFrame {
 			n = new float[3];
 			u = new float[3];
 			c = new float[3];
-			
+
 			cortaLinha();
 			n[0] = Integer.parseInt(str[2]);
 			n[1] = Integer.parseInt(str[3]);
@@ -289,7 +298,7 @@ public class Main extends JFrame {
 				System.out.print(v[i]);
 			}
 			System.out.println();
-			
+
 			// inicializa u
 			cortaLinha();
 			u[0] = Integer.parseInt(str[2]);
@@ -321,7 +330,7 @@ public class Main extends JFrame {
 			for (int i = 0; i < c.length; i++) {
 				System.out.print(c[i]);
 			}
-	
+
 			for (int i = 0; i < u.length; i++) {
 				System.out.print(u[i]);
 			}
@@ -332,13 +341,13 @@ public class Main extends JFrame {
 			System.err.printf("Erro na leitura do arquivo: %s.\n", e.getMessage());
 		}
 	}
-	
+
 	/*Recebe um ponto p do polígono no sistema de coordenadas mundial, converte para o sistema de coordenadas de vista
 	 * e devolve p'(ponto no sistema de vista).*/
 	public static float[] Mundial_to_Vista(float[] p) {
 		float[][] pSubCCol;
 		float[] pSubC;
-		
+
 		// obtendo as normas de U, V, N
 		float normaU = lib.norma(u);
 		float normaVLinha = lib.norma(vLinha);
@@ -348,18 +357,18 @@ public class Main extends JFrame {
 		float nBarra[] = {1/normaN * n[0], 1/normaN * n[1], 1/normaN * n[2]};
 		float vLinhaBarra[] = {(1/normaVLinha) * vLinha[0], (1/normaVLinha) * vLinha[1], (1/normaVLinha) * vLinha[2]};
 		float uBarra[] = {1/normaU * u[0], 1/normaU * u[1], 1/normaU * u[2]};
-	
+
 		System.out.println("vLinhaBarra: ");
-		
+
 		for (int i = 0; i < vLinhaBarra.length; i++) {
 			System.out.print(vLinhaBarra[i]);
 		}
-		
+
 		// matriz de convers�o de bases I
 		float[][] I = { { uBarra[0], uBarra[1], uBarra[2] }, 
-									  { vLinhaBarra[0], vLinhaBarra[1], vLinhaBarra[2] }, 
-									  { nBarra[0], nBarra[1], nBarra[2] } };
-		
+				{ vLinhaBarra[0], vLinhaBarra[1], vLinhaBarra[2] }, 
+				{ nBarra[0], nBarra[1], nBarra[2] } };
+
 		// (P - C)
 		pSubC = lib.subtraiVetor(p, c);
 		// colocando (P - C) em uma Matriz Coluna
@@ -367,40 +376,39 @@ public class Main extends JFrame {
 		pSubCCol[0][0] = pSubC[0]; 
 		pSubCCol[1][0] = pSubC[1];
 		pSubCCol[2][0] = pSubC[2];
-		
+
 		// calculando e devolvendo pLinha
 		float[][] pLinha = lib.calculaProduto(I, pSubCCol);
-		
-		// convertendo a matriz acima em um vetor para facilitar os c�lculos
+
+		// convertendo a matriz acima em um vetor para facilitar os cálculos
 		float[] pLinhaVet = {pLinha[0][0], pLinha[1][0], pLinha[2][0]};
-		
+
 		return pLinhaVet;
 	}
-	
+
 	/* processo de Gram-Schmidt para ortogonalizar V e calcular U */
-	public static float[] Gram_Schmidt() {
+	public static void Gram_Schmidt() {
 		/* produto escalar entre V e N = <V,N> */
 		float Vn = lib.produtoEscalar(v, n);
 		/* produto escalar entre N e N = <N,N> */
 		float Nn = lib.produtoEscalar(n, n);
-		
+
 		/* salvando o Inverso do produto escalar entre N e N em uma vari�vel extra */
 		float invNn = 1/Nn;
-		
+
 		// Ortogonalizando V:
 		/* Calculando V' */
 		float e = Vn * invNn; // escalar resultado dos produtos escalares entre <V,N> e inv<N,N> tal que: < <V,N>, inv<N,N> > = <V,N>/<N,N>
 		/* multiplicando o escalar(e) obtido pelo vetor N e salvando no vetor  
 		 * resultInt(resultadoIntermediario) */
 		float[] resultInt = {n[0]*e, n[1]*e, n[2]*e};
-		// �ltimo passo para obter vLinha:
+		// Último passo para obter vLinha:
 		vLinha = lib.subtraiVetor(v, resultInt);
-	
+
 		/* Calculando e devolvendo U */
-		float[] u = lib.produtoVetorial(n, vLinha);		
-		return u;
+		u = lib.produtoVetorial(n, vLinha);		
 	}
-	
+
 	public static void projecaoEmPerspectiva() {
 		/* Realizando a projeção em perspectiva. */
 		float xv = pLinha[0];
@@ -411,20 +419,20 @@ public class Main extends JFrame {
 		/* Convertendo as coordenadas xs e ys para coordenadas normalizadas. */
 		float xsBarra = xs/hx;
 		float ysBarra = ys/hy;
-		
+
 		/* Convertendo as coordenadas normalizadas(xsBarra, ysBarra) para Coordenadas de Tela. */
 		// Pegando o x e o y da tela
 		Toolkit tk = Toolkit.getDefaultToolkit();
-    Dimension d = tk.getScreenSize();
-    double resX = d.getWidth();
-    double resY = d.getHeight();
-    
-    i = Math.floor((xsBarra+1)/2 * resX + 0.5);
-    j = Math.floor(resY - ( (ysBarra + 1)/2 + 0.5) );
+		Dimension d = tk.getScreenSize();
+		double resX = d.getWidth();
+		double resY = d.getHeight();
+
+		i = Math.floor((xsBarra+1)/2 * resX + 0.5);
+		j = Math.floor(resY - ( (ysBarra + 1)/2 + 0.5) );
 	}
-	
+
 	public static void scanLine() {
-		
+
 	}
 
 	public static void cortaLinha() throws IOException {
