@@ -30,8 +30,9 @@ public class Main extends JFrame {
 	static String[] str;
 	static LibMath lib = new LibMath();
 	static float[] vLinha, u, v, n, c;
-	static float[][] pLinha;
+	static float[] pLinha;
 	static int d, hx, hy;
+	static double i, j; // coordenadas de tela
 
 	public static void main(String[] args) {  
 		carregaCamera();
@@ -65,13 +66,8 @@ public class Main extends JFrame {
 					u = Gram_Schmidt();
 					pLinha = Mundial_to_Vista(P);
 
-					System.out.println("pLinha: ");
-					for (int l = 0; l < pLinha.length; l++)  {  
-						for (int c = 0; c < pLinha[0].length; c++)     { 
-							System.out.print(pLinha[l][c] + " "); //imprime caracter a caracter
-						}  
-						System.out.println(" "); //muda de linha
-					}
+					System.out.println("pLinha: " + pLinha);
+					
 				}
 			} catch (IOException e) {
 				System.out.println(e.getMessage());
@@ -223,8 +219,8 @@ public class Main extends JFrame {
 				vertices.add(v); 
 			}
 			
-			/* Para cada linha de tri�ngulo no arquivo, adiciona um tri�ngulo no ArrayList 
-			 * - juntamente com seus �ndices lidos do arquivo(carrega os tri�ngulos */
+			/* Para cada linha de triangulo no arquivo, adiciona um triangulo no ArrayList 
+			 * - juntamente com seus índices lidos do arquivo(carrega os triangulos */
 			for (int j = i; j <= Integer.parseInt(strA[1]); j++) {
 				linha = lerArq.readLine(); 
 
@@ -406,14 +402,12 @@ public class Main extends JFrame {
 	}
 	
 	public static void projecaoEmPerspectiva() {
-		/* Realizando a proje��o em perspectiva. */
-		float xv = pLinha[0][0];
-		float yv = pLinha[0][1];
-		float zv = pLinha[0][2];
+		/* Realizando a projeção em perspectiva. */
+		float xv = pLinha[0];
+		float yv = pLinha[1];
+		float zv = pLinha[2];
 		float xs = d * (xv/zv);
 		float ys = d * (yv/zv);
-		float[] pBarra = {xs, ys};
-		
 		/* Convertendo as coordenadas xs e ys para coordenadas normalizadas. */
 		float xsBarra = xs/hx;
 		float ysBarra = ys/hy;
@@ -425,11 +419,13 @@ public class Main extends JFrame {
     double resX = d.getWidth();
     double resY = d.getHeight();
     
-    double i = Math.floor((xsBarra+1)/2 * resX + 0.5);
-    double j = Math.floor(resY - ( (ysBarra + 1)/2 + 0.5) );
+    i = Math.floor((xsBarra+1)/2 * resX + 0.5);
+    j = Math.floor(resY - ( (ysBarra + 1)/2 + 0.5) );
 	}
 	
-	public static void scanLine() {}
+	public static void scanLine() {
+		
+	}
 
 	public static void cortaLinha() throws IOException {
 		linha = lerArq.readLine(); 
